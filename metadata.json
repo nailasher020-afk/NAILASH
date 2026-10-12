@@ -1,0 +1,6 @@
+{
+  "name": "Nailash - Premium Online Clothing Brand",
+  "description": "Discover timeless fashion crafted with comfort, quality, and grace. Explore luxury pret, embroidered lawn, unstitched collections, and modern couture by Nailash.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
