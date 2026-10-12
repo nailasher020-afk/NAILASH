@@ -223,12 +223,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return { view: 'admin-login' };
       }
 
-      // Check admin routes - strictly protect (redirect unauthorized public to home)
+      // Check admin routes - if authenticated, show admin dashboard; otherwise show admin login
       if (path.startsWith('/admin') || hash.startsWith('admin')) {
         const isAuthed = isCurrentSessionAdmin();
         if (!isAuthed) {
-          // Public visitors attempting to view /admin get directed to home storefront
-          return { view: 'home' };
+          return { view: 'admin-login' };
         }
         const parts = path.startsWith('/admin')
           ? path.split('/').filter(Boolean)
@@ -274,9 +273,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const handleRouteSync = () => {
       const route = resolveRouteFromUrl();
       if (route.view === 'admin' && !isCurrentSessionAdmin()) {
-        setActiveViewRaw('home');
+        setActiveViewRaw('admin-login');
         try {
-          window.history.replaceState(null, '', '/');
+          window.history.replaceState(null, '', '/admin/login');
         } catch (_) {}
       } else {
         setActiveViewRaw(route.view);
@@ -294,16 +293,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Secure navigation dispatch
   const setActiveView = (nextView: string) => {
-    // If navigating to admin, enforce strict authentication check (nailasher020@gmail.com only)
+    // If navigating to admin, check authentication
     if (nextView === 'admin') {
-      const isOwner = (isCurrentSessionAdmin() || isAdminAuthenticated) &&
-        (isAuthorizedOwnerEmail(adminUser?.email) || isAuthorizedOwnerEmail(currentUser?.email));
+      const isOwner = Boolean(
+        isCurrentSessionAdmin() ||
+        (isAdminAuthenticated && isAuthorizedOwnerEmail(adminUser?.email)) ||
+        isAuthorizedOwnerEmail(currentUser?.email)
+      );
 
       if (!isOwner) {
-        showToast('Access Denied: Admin Dashboard is restricted to nailasher020@gmail.com only.', 'error');
-        setActiveViewRaw('home');
+        // Not authenticated yet - smoothly direct to admin login
+        setActiveViewRaw('admin-login');
         try {
-          window.history.pushState(null, '', '/');
+          window.history.pushState(null, '', '/admin/login');
         } catch (_) {}
         return;
       }
@@ -344,6 +346,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setAdminUser(result.user);
       setIsAdminAuthenticated(true);
       setUserRole('admin');
+
+      const ownerCust: Customer = {
+        id: 'cust-nailasher',
+        name: 'Naila Sher',
+        email: 'nailasher020@gmail.com',
+        phone: '03001234567',
+        city: 'Lahore',
+        totalOrders: 0,
+        totalSpent: 0,
+        status: 'active',
+        createdAt: new Date().toISOString()
+      };
+      setCurrentUser(ownerCust);
+      try {
+        localStorage.setItem('nailash_current_user', JSON.stringify(ownerCust));
+      } catch (_) {}
+
       setActiveViewRaw('admin');
       try {
         window.history.pushState(null, '', '/admin');

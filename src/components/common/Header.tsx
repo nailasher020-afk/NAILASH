@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Search, Heart, ShoppingBag, User, Shield, Lock, X, Menu } from 'lucide-react';
+import { isCurrentSessionAdmin, isAuthorizedOwnerEmail } from '../../utils/adminAuth';
 
 export const Header: React.FC = () => {
   const {
@@ -17,9 +18,9 @@ export const Header: React.FC = () => {
   } = useStore();
 
   const isOwner = Boolean(
-    isAdminAuthenticated &&
-    (adminUser?.email?.toLowerCase() === 'nailasher020@gmail.com' ||
-     currentUser?.email?.toLowerCase() === 'nailasher020@gmail.com')
+    isCurrentSessionAdmin() ||
+    (isAdminAuthenticated && isAuthorizedOwnerEmail(adminUser?.email)) ||
+    isAuthorizedOwnerEmail(currentUser?.email)
   );
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -192,16 +193,26 @@ export const Header: React.FC = () => {
             )}
           </button>
 
-          {/* Exclusive Store Owner Admin Entry - STRICTLY only for nailasher020@gmail.com */}
-          {isOwner && (
+          {/* Store Owner Admin Entry */}
+          {isOwner ? (
             <button
               onClick={() => handleNav('admin')}
-              className="ml-1 sm:ml-2 px-3 py-1.5 text-xs font-semibold rounded-full bg-stone-900 text-white hover:bg-stone-800 transition-all flex items-center gap-1.5 whitespace-nowrap shadow-xs cursor-pointer border border-[#DB9558]/40"
+              className="ml-1 sm:ml-2 px-3 py-1.5 text-xs font-semibold rounded-full bg-stone-900 text-amber-200 hover:bg-stone-800 transition-all flex items-center gap-1.5 whitespace-nowrap shadow-xs cursor-pointer border border-[#DB9558]/60"
               title="Open Admin ERP Dashboard (Naila Sher)"
             >
               <Shield className="w-3.5 h-3.5 text-[#DB9558]" />
-              <span className="hidden sm:inline">Admin Dashboard</span>
+              <span className="hidden sm:inline">👑 Admin Dashboard</span>
               <span className="sm:hidden">Admin</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => handleNav('admin-login')}
+              className="ml-1 sm:ml-2 px-2.5 py-1 text-xs font-medium rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all flex items-center gap-1 whitespace-nowrap border border-stone-200 cursor-pointer"
+              title="Store Owner & Admin Portal (Naila Sher)"
+              aria-label="Admin Portal"
+            >
+              <Shield className="w-3 h-3 text-[#DB9558]" />
+              <span className="hidden lg:inline text-[11px] font-semibold text-stone-600">Admin</span>
             </button>
           )}
         </div>
@@ -298,16 +309,19 @@ export const Header: React.FC = () => {
               <User className="w-4 h-4 text-stone-500" />
             </button>
 
-            {/* Mobile Owner Access - Strictly for nailasher020@gmail.com only */}
-            {isOwner && (
-              <button
-                onClick={() => handleNav('admin')}
-                className="text-left py-2.5 text-[#DB9558] font-bold flex items-center justify-between"
-              >
-                <span>Open Admin Dashboard (Naila Sher)</span>
-                <Shield className="w-4 h-4" />
-              </button>
-            )}
+            {/* Mobile Owner Access */}
+            <button
+              onClick={() => handleNav(isOwner ? 'admin' : 'admin-login')}
+              className="text-left py-2.5 text-stone-800 hover:text-[#DB9558] font-medium flex items-center justify-between border-t border-stone-200/80 mt-2 pt-3"
+            >
+              <span className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-[#DB9558]" />
+                <span>{isOwner ? '👑 Open Admin Dashboard' : 'Store Owner / Admin Portal'}</span>
+              </span>
+              <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded font-mono font-semibold">
+                {isOwner ? 'Active' : 'Naila Sher'}
+              </span>
+            </button>
           </div>
         </div>
       )}

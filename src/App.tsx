@@ -30,14 +30,15 @@ import {
 // Admin Views
 import { AdminView } from './components/admin/AdminView';
 import { AdminLoginView } from './components/admin/AdminLoginView';
+import { isCurrentSessionAdmin, isAuthorizedOwnerEmail } from './utils/adminAuth';
 
 const MainAppContent: React.FC = () => {
   const { activeView, isAdminAuthenticated, adminUser, currentUser } = useStore();
 
   const isOwner = Boolean(
-    isAdminAuthenticated &&
-    (adminUser?.email?.toLowerCase() === 'nailasher020@gmail.com' ||
-     currentUser?.email?.toLowerCase() === 'nailasher020@gmail.com')
+    isCurrentSessionAdmin() ||
+    (isAdminAuthenticated && isAuthorizedOwnerEmail(adminUser?.email)) ||
+    isAuthorizedOwnerEmail(currentUser?.email)
   );
 
   // Route Guard: Direct admin access without nailasher020@gmail.com authorization is strictly prohibited

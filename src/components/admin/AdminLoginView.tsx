@@ -53,6 +53,21 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = () => {
     setError(null);
   };
 
+  const handleInstantLogin = () => {
+    setError(null);
+    setLoading(true);
+    setTimeout(() => {
+      const res = loginAdmin('nailasher020@gmail.com', 'nailash123', true);
+      setLoading(false);
+      if (res.success) {
+        showToast('Khush Amdeed, Naila Sher! Admin ERP khul gaya hai.', 'success');
+        setActiveView('admin');
+      } else {
+        setError(res.error || 'Authentication failed.');
+      }
+    }, 200);
+  };
+
   return (
     <div className="min-h-screen bg-[#FCF9EA] flex flex-col justify-between antialiased text-stone-800 selection:bg-[#DB9558]/20 selection:text-[#8e5220]">
       {/* Top Header Bar */}
@@ -198,20 +213,21 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = () => {
 
               <button
                 type="button"
-                onClick={() => handleQuickFill('nailash123')}
-                className="w-full text-left p-3 rounded-lg border border-stone-200 bg-stone-50/70 hover:bg-[#FCF9EA] hover:border-[#DB9558]/40 transition-colors flex items-center justify-between text-xs group cursor-pointer"
+                onClick={handleInstantLogin}
+                className="w-full text-left p-3.5 rounded-xl border border-[#DB9558]/40 bg-[#FCF9EA] hover:bg-[#f6eed2] hover:border-[#DB9558] transition-all flex items-center justify-between text-xs group cursor-pointer shadow-xs"
               >
                 <div>
                   <div className="font-semibold text-stone-900 group-hover:text-[#8e5220] flex items-center gap-1.5">
-                    <span>Naila Sher (Store Manager)</span>
-                    <span className="text-[10px] px-1.5 py-0.2 bg-[#DB9558]/20 text-[#8e5220] rounded">Owner</span>
+                    <span>👑 Naila Sher (Store Owner)</span>
+                    <span className="text-[10px] px-2 py-0.5 bg-[#DB9558]/20 text-[#8e5220] rounded-full font-bold">1-Click Login</span>
                   </div>
-                  <div className="text-[11px] text-stone-500 font-mono mt-0.5">
-                    nailasher020@gmail.com · Password: <span className="font-bold text-stone-700">nailash123</span>
+                  <div className="text-[11px] text-stone-600 font-mono mt-1">
+                    nailasher020@gmail.com
                   </div>
                 </div>
-                <span className="text-xs font-semibold text-[#DB9558] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pl-2">
-                  Auto Fill →
+                <span className="text-xs font-semibold text-white bg-stone-900 group-hover:bg-[#8e5220] transition-colors py-1.5 px-3 rounded-lg flex items-center gap-1 whitespace-nowrap shadow-xs">
+                  <span>Sign In</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </button>
             </div>

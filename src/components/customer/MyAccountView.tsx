@@ -90,6 +90,18 @@ export const MyAccountView: React.FC = () => {
         </div>
       )}
 
+      {currentUser.email.toLowerCase() !== 'nailasher020@gmail.com' && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setActiveView('admin-login')}
+            className="text-xs text-stone-500 hover:text-stone-800 transition-colors inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-50"
+          >
+            <Shield className="w-3.5 h-3.5 text-[#DB9558]" />
+            <span>Store Owner Portal (Naila Sher)</span>
+          </button>
+        </div>
+      )}
+
       {/* Account Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-lg border border-stone-200/80 space-y-1">

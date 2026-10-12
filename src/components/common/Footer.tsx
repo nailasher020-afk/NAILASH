@@ -1,14 +1,15 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
 import { ShieldCheck, Truck, RefreshCw, Sparkles, Phone, Mail, MapPin, Shield } from 'lucide-react';
+import { isCurrentSessionAdmin, isAuthorizedOwnerEmail } from '../../utils/adminAuth';
 
 export const Footer: React.FC = () => {
   const { setActiveView, storeSettings, isAdminAuthenticated, adminUser, currentUser } = useStore();
 
   const isOwner = Boolean(
-    isAdminAuthenticated &&
-    (adminUser?.email?.toLowerCase() === 'nailasher020@gmail.com' ||
-     currentUser?.email?.toLowerCase() === 'nailasher020@gmail.com')
+    isCurrentSessionAdmin() ||
+    (isAdminAuthenticated && isAuthorizedOwnerEmail(adminUser?.email)) ||
+    isAuthorizedOwnerEmail(currentUser?.email)
   );
 
   const handleNav = (view: string) => {
@@ -176,26 +177,16 @@ export const Footer: React.FC = () => {
                   About Nailash Heritage
                 </button>
               </li>
-              {isOwner ? (
-                <li>
-                  <button
-                    onClick={() => handleNav('admin')}
-                    className="hover:text-[#DB9558] text-[#DB9558] font-medium transition-colors flex items-center gap-1.5 pt-1"
-                  >
-                    <Shield className="w-3 h-3 text-[#DB9558]" />
-                    <span>Admin ERP Dashboard (Naila Sher)</span>
-                  </button>
-                </li>
-              ) : (
-                <li>
-                  <button
-                    onClick={() => handleNav('about')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Authenticity Guarantee
-                  </button>
-                </li>
-              )}
+              <li>
+                <button
+                  onClick={() => handleNav(isOwner ? 'admin' : 'admin-login')}
+                  className="hover:text-[#DB9558] text-[#DB9558]/90 font-medium transition-colors flex items-center gap-1.5 pt-1 text-xs"
+                  title="Store Owner Portal (Naila Sher)"
+                >
+                  <Shield className="w-3.5 h-3.5 text-[#DB9558]" />
+                  <span>{isOwner ? '👑 Admin ERP Dashboard (Naila Sher)' : 'Store Owner / Admin Portal'}</span>
+                </button>
+              </li>
             </ul>
             <div className="mt-6 pt-4 border-t border-stone-800">
               <span className="text-[11px] uppercase tracking-wider text-stone-500 block mb-2">Accepted Payments</span>
@@ -208,9 +199,18 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom copyright */}
-        <div className="border-t border-stone-800/80 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500">
+        <div className="border-t border-stone-800/80 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-2">
           <p>© {new Date().getFullYear()} Nailash Apparel (Pvt) Ltd. All rights reserved.</p>
-          <p className="mt-2 sm:mt-0 font-light">Crafted for timeless elegance & luxury fashion.</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleNav(isOwner ? 'admin' : 'admin-login')}
+              className="hover:text-[#DB9558] text-stone-500 transition-colors flex items-center gap-1 text-[11px]"
+            >
+              <span>{isOwner ? '👑 Admin Active' : 'Staff Login'}</span>
+            </button>
+            <span>·</span>
+            <p className="font-light">Crafted for timeless elegance & luxury fashion.</p>
+          </div>
         </div>
       </div>
     </footer>

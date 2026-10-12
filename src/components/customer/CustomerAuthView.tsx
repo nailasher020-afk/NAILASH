@@ -310,6 +310,13 @@ export const CustomerAuthView: React.FC = () => {
             >
               Sign In as Naila Sher & Open Dashboard →
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveView('admin-login')}
+              className="w-full py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs rounded transition-colors text-center block cursor-pointer"
+            >
+              Open Dedicated Admin Login Screen →
+            </button>
           </div>
         )}
       </div>
